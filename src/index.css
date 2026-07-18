@@ -1,0 +1,262 @@
+@import "tailwindcss";
+
+/* ──────────────────────────────────────────────────────────
+   ArenaAI Design System — Tailwind CSS v4 Theme
+   ────────────────────────────────────────────────────────── */
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  /* Core palette */
+  --color-void: #07080C;
+  --color-abyss: #0B0D14;
+  --color-surface: #10131C;
+  --color-surface-raised: #161A27;
+  --color-surface-overlay: #1C2133;
+  --color-border: #232A3F;
+  --color-border-subtle: #1A1F30;
+
+  /* Accent palette */
+  --color-cyan: #22D3EE;
+  --color-cyan-muted: #0E7490;
+  --color-purple: #A78BFA;
+  --color-purple-muted: #6D28D9;
+  --color-emerald: #34D399;
+  --color-rose: #FB7185;
+  --color-amber: #FBBF24;
+  --color-sky: #38BDF8;
+
+  /* Text palette */
+  --color-text-primary: #F1F5F9;
+  --color-text-secondary: #94A3B8;
+  --color-text-muted: #64748B;
+  --color-text-faint: #475569;
+
+  /* Glass */
+  --color-glass: rgba(16, 19, 28, 0.60);
+  --color-glass-strong: rgba(16, 19, 28, 0.82);
+  --color-glass-border: rgba(255, 255, 255, 0.06);
+  --color-glass-border-hover: rgba(255, 255, 255, 0.12);
+
+  /* Glow */
+  --color-glow-cyan: rgba(34, 211, 238, 0.15);
+  --color-glow-purple: rgba(167, 139, 250, 0.15);
+  --color-glow-emerald: rgba(52, 211, 153, 0.12);
+
+  /* Shadows */
+  --shadow-glow-sm: 0 0 15px rgba(34, 211, 238, 0.08);
+  --shadow-glow-md: 0 0 30px rgba(34, 211, 238, 0.12);
+  --shadow-glow-lg: 0 0 60px rgba(34, 211, 238, 0.15);
+  --shadow-glow-purple: 0 0 40px rgba(167, 139, 250, 0.12);
+  --shadow-elevated: 0 25px 50px -12px rgba(0, 0, 0, 0.50);
+
+  /* Radii */
+  --radius-panel: 16px;
+  --radius-card: 12px;
+  --radius-button: 10px;
+
+  /* Timing */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Base
+   ────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: var(--color-void);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-cyan-muted); }
+
+/* Selection */
+::selection {
+  background: rgba(34, 211, 238, 0.25);
+  color: var(--color-text-primary);
+}
+
+/* ──────────────────────────────────────────────────────────
+   Utility classes
+   ────────────────────────────────────────────────────────── */
+.glass {
+  background: var(--color-glass);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border: 1px solid var(--color-glass-border);
+}
+
+.glass-strong {
+  background: var(--color-glass-strong);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid var(--color-glass-border);
+}
+
+.glow-cyan {
+  box-shadow: var(--shadow-glow-sm);
+}
+
+.glow-cyan-md {
+  box-shadow: var(--shadow-glow-md);
+}
+
+.glow-purple {
+  box-shadow: var(--shadow-glow-purple);
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, var(--color-cyan), var(--color-sky));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-purple {
+  background: linear-gradient(135deg, var(--color-purple), var(--color-rose));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-multi {
+  background: linear-gradient(135deg, var(--color-cyan), var(--color-purple), var(--color-rose));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Aurora Background
+   ────────────────────────────────────────────────────────── */
+.aurora-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.aurora-bg::before,
+.aurora-bg::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.3;
+  animation: aurora-drift 20s ease-in-out infinite alternate;
+}
+
+.aurora-bg::before {
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(34, 211, 238, 0.12), transparent 70%);
+  top: -200px;
+  left: -200px;
+}
+
+.aurora-bg::after {
+  width: 600px;
+  height: 800px;
+  background: radial-gradient(ellipse, rgba(167, 139, 250, 0.10), transparent 70%);
+  bottom: -300px;
+  right: -200px;
+  animation-delay: -10s;
+}
+
+@keyframes aurora-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(60px, 40px) scale(1.1); }
+  100% { transform: translate(-30px, 20px) scale(0.95); }
+}
+
+/* Noise overlay for texture */
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   Animations
+   ────────────────────────────────────────────────────────── */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes gradient-shift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes marching-ants {
+  to { stroke-dashoffset: -20; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s var(--ease-out-expo) both;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 6s ease infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* Stagger helper */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.10s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.20s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.30s; }

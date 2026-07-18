@@ -6,7 +6,7 @@ import DashboardLayout from '../../components/DashboardLayout';
 describe('DashboardLayout Component', () => {
   it('renders correctly with given active tab', () => {
     render(<DashboardLayout activeTab="overview" onTabChange={vi.fn()} onCommandPalette={vi.fn()} />);
-    expect(screen.getByText(/System workspace/i)).toBeInTheDocument();
+    expect(screen.getByText(/System Admin Workspace/i)).toBeInTheDocument();
   });
 
   it('calls onTabChange when a sidebar item is clicked', async () => {
@@ -14,8 +14,8 @@ describe('DashboardLayout Component', () => {
     const user = userEvent.setup();
     render(<DashboardLayout activeTab="overview" onTabChange={onTabChange} onCommandPalette={vi.fn()} />);
     
-    // There are two navigation elements for "Stadium Map" (sidebar and mobile nav), click the first one
-    const mapBtn = screen.getAllByRole('button', { name: /Stadium Map/i })[0];
+    // There is one navigation element for "Stadium Map"
+    const mapBtn = screen.getByRole('tab', { name: /Stadium Map/i });
     await user.click(mapBtn);
     
     expect(onTabChange).toHaveBeenCalledWith('map');

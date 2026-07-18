@@ -18,6 +18,6 @@ describe('App Component', () => {
     await user.click(enterBtn);
     
     // Should now be on the dashboard showing the Overview tab
-    expect(screen.getByText(/System workspace/i)).toBeInTheDocument();
+    expect(screen.getByText(/System Admin Workspace/i)).toBeInTheDocument();
   });
 });

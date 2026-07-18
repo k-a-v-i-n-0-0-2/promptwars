@@ -1,141 +1,57 @@
-# 🏟️ ArenaAI — FIFA World Cup 2026 Smart Stadium Intelligence
+# ArenaAI — The Ultimate Operations Intelligence Platform
 
-> **Category**: Smart Stadiums & Tournament Operations (PromptWars 2026 Entry)
-> 
-> *A next-generation Generative AI-powered Command Center engineered to optimize match-day stadium operations, crowd safety, and fan experience for the world's largest sporting event.*
+ArenaAI is a **FIFA-grade Operations Intelligence Platform** designed specifically for high-stakes tournament environments (e.g. World Cup 2026). It moves beyond basic dashboards into **AI-driven predictive analytics** for complete stadium operational awareness.
 
----
+Built for **PromptWars Virtual Challenge 4 (Smart Stadiums)**, this platform prioritizes:
+1. **Problem Alignment** — Covering 10+ distinct operational domains.
+2. **AI Integration** — Using Gemini for reasoning, prediction, and risk forecasting in *every* module.
+3. **Enterprise Architecture** — Role-based access, error boundaries, rate limiting, and severe strict security (CSP).
 
-## 🌟 The Vision
+## 🚀 Key Features
 
-Managing the logistics of a **FIFA World Cup** stadium requires coordinating crowd flows, security protocols, environmental sensors, and gateway access points across tens of thousands of fans per minute. 
+- **Role-Based Access Control (RBAC)**: Switch between 8 roles (CEO, Ops Manager, Security Chief, Medical Director, etc.) to access context-specific dashboards.
+- **10+ AI-Powered Modules**:
+  - **Executive Command**: High-level KPI and revenue tracking with AI strategic briefings.
+  - **Risk Forecasting**: Composite multi-vector risk models combining weather, security, and crowd data.
+  - **Crowd Intelligence**: Density maps, flow rate predictions, and AI-recommended gate redirections.
+  - **Security Command**: CCTV simulation, threat level monitoring, and anomaly detection.
+  - **Medical Dispatch**: Accessibility metrics, incident probability heatmaps, and response optimization.
+  - **Transport & Parking**: Lot fill rates, public transit integration, and AI traffic rerouting.
+  - **Food & Vendor Ops**: Real-time revenue tracking, queue wait predictions, and halftime surge forecasting.
+  - **Maintenance**: Restroom capacity tracking and AI-driven cleaning crew dispatch.
+  - **Weather Impact**: Rain probability, temperature tracking, and AI-recommended mitigations.
+  - **Volunteer Management**: Shift scheduling and AI-recommended dynamic reassignments.
+- **Sophia AI Assistant**: A conversational Gemini-powered AI that provides real-time stadium insights via chat.
+- **Digital Twin**: 3D interactive stadium map.
 
-**ArenaAI** bridges the gap between raw, complex IoT sensor data and operational decisions. It provides stadium administrators and logistics coordinators with a cinematic, real-time control cockpit. By injecting live telemetry directly into a localized GenAI assistant (Sophia), ArenaAI translates complex network telemetry, crowd decibels, and gateway wait times into natural language status summaries and proactive mitigations.
+## 🧠 Technology Usage (Gemini 2.0 Flash)
 
----
+Every module incorporates our custom `useAIPrediction` hook, which:
+1. Synthesizes a real-time `stadiumData` telemetry object.
+2. Combines it with a domain-specific system prompt (e.g. `medical`, `security`).
+3. Queries Gemini to generate a structured JSON response containing:
+   - Prediction Summary
+   - Confidence Score (0-100)
+   - Risk Severity
+   - AI Reasoning Chain
+   - Recommended Actions
 
-## 🚀 Key Innovation Highlights
+## 🛡️ Enterprise Grade
 
-### 1. Context-Aware GenAI Assistant (Sophia AI)
-- Powered by Google's `gemini-flash-latest` model.
-- **Dynamic Telemetry Injection**: We inject live, real-time stadium metrics (active spectators, current score, gate wait times, security status, and HVAC temperatures) directly into the model's system context.
-- **Proactive Coordination**: Sophia does not just reply to queries; she tracks active gates, coordinates medical units, and recommends crowd routing adjustments based on live telemetry inputs.
-- **Offline Fallback**: When the API is unreachable, Sophia seamlessly falls back to template responses for critical queries.
+- **Code Quality**: Custom hooks (`useStadiumData`, `useRoleAccess`, `useAIPrediction`), strict linting, memoized components, and React Error Boundaries.
+- **Security**: Hardened Content-Security-Policy (CSP) without `unsafe-eval`, sanitized DOM insertions, API rate limiting, and robust input validation.
+- **Efficiency**: Lazy-loaded modules, optimized Vite chunking, efficient CSS-grid heatmaps (instead of heavy canvas where possible), and `useMemo`/`useCallback` optimizations.
+- **Accessibility**: 100% ARIA-compliant role/tablist navigation, screen-reader friendly live prediction updates (`aria-live="polite"`), keyboard navigability, and WCAG-compliant contrasts.
+- **Testing**: Comprehensive Vitest suite covering hooks, utilities, security validation, and component integration.
 
-### 2. Live Video Telemetry Overlay Map
-- A **real-time 3D WebGL digital twin** of the stadium built with Three.js.
-- Interactive hotspot pins with raycasting for section-level occupancy, temperature, and status data.
-- Proper GPU resource management with full disposal on unmount.
+## 🛠️ Run Locally
 
-### 3. Asymmetrical Bento-Grid System Control
-- A data-rich command center that balances density with user readability.
-- **Executive Status Briefing**: A premium HUD banner that translates dense, technical node pings into a simplified human summary.
-- **syslog_daemon Logs**: A live-updating terminal log presenting JSON pings, scanner handshakes, and sensor packet reports in real time.
-- **sensor_grid_node_matrix**: An active grid tracking 16 IoT sensor points across stadium zones.
+1. Clone repository
+2. Run `npm install`
+3. Create `.env` file with `VITE_GEMINI_API_KEY=your_key`
+4. Run `npm run dev`
 
-### 4. Emergency Response Center
-- One-click protocol activation with step-by-step response checklist.
-- Real-time coordination contacts for security, medical, and fire units.
-- Integrated `aria-pressed` and `role="checkbox"` patterns for full keyboard/screen-reader operability.
-
----
-
-## 🛠️ Built With the Modern Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Core Framework** | React 19 + Vite 8 |
-| **Styling** | Tailwind CSS v4 (micro-bordered frosted glass, aurora backdrops, gold accents) |
-| **Animations** | Framer Motion 12 (scroll-linked Ken Burns zooms, mouse-parallax layers, floating bokeh motes) |
-| **3D Visualization** | Three.js (WebGL stadium digital twin with raycasting) |
-| **Charts** | Recharts (custom minimized curves and vertical gradients) |
-| **API** | Google Gemini API (`generativelanguage.googleapis.com`) |
-| **Testing** | Vitest + React Testing Library + MSW + vitest-axe |
-| **Security** | DOMPurify for XSS prevention, Content Security Policy headers |
-
----
-
-## 🏗️ Architecture & Data Flow
-
-```mermaid
-graph TD
-  A["Stadium IoT Sensors & Cameras"] -->|Live Telemetry| B["React State Engine"]
-  B -->|Ingress, Decibels, Gate Queues| C["Executive HUD Briefing"]
-  B -->|Sensor Node Status| D["Syslog Daemon Logs"]
-  B -->|Context Injection Payload| E["Sophia AI Assistant"]
-  F["Google Gemini API"] <-->|Context-Aware Conversation| E
-  B -->|3D Coordinates| G["Three.js Stadium Digital Twin"]
-```
-
----
-
-## ⚙️ Quick Setup
-
-### 1. Prerequisites
-Ensure you have [Node.js](https://nodejs.org/) (v18+) installed.
-
-### 2. Installation
 ```bash
-git clone https://github.com/k-a-v-i-n-0-0-2/promptwars.git
-cd promptwars
-npm install
+npm run test      # Run full test suite
+npm run build     # Build for production
 ```
-
-### 3. Environment Variables
-Create a `.env` file in the root directory:
-```env
-VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY
-```
-> **Note**: `.env` is git-ignored. See `.env.example` for the template.
-
-### 4. Running the Dev Server
-```bash
-npm run dev
-```
-Open **http://localhost:5173/** in your browser to experience ArenaAI.
-
-### 5. Running Tests
-```bash
-npm test              # Run all tests
-npm run test:coverage # Run tests with coverage
-```
-
-### 6. Building for Production
-```bash
-npm run build
-```
-
----
-
-## 🔒 Security
-
-- **XSS Prevention**: All AI-generated markdown is sanitized through DOMPurify with a strict allowlist before rendering.
-- **Content Security Policy**: A strict CSP meta tag restricts script sources, API connections, and font/image origins.
-- **Input Sanitization**: User input to Sophia is trimmed and length-limited (500 chars) before API transmission.
-- **Request Timeout**: All API calls use `AbortController` with a 15-second timeout to prevent hanging requests.
-- **No Console Leaks**: Error details are handled structurally without `console.error` in production paths.
-
----
-
-## ♿ Accessibility (WCAG 2.2 AA)
-
-- **Skip Navigation**: A "Skip to content" link is provided for keyboard users.
-- **ARIA Landmarks**: All navigation, dialog, and interactive regions are properly labeled with `aria-label`, `role`, and `aria-live`.
-- **Focus Management**: `:focus-visible` rings are applied globally for keyboard navigation visibility.
-- **Reduced Motion**: A `prefers-reduced-motion` media query disables all animations for users who prefer reduced motion.
-- **Screen Reader Support**: The 3D stadium map includes an `aria-label` and screen-reader-only description. Chat messages use `role="log"` with `aria-live="polite"`.
-
----
-
-## 🧪 Testing
-
-| Suite | Coverage |
-|-------|----------|
-| **Component Tests** | AIAssistant, DashboardLayout, EmergencyCenter, Overview |
-| **Integration Tests** | App navigation flow (landing → dashboard) |
-| **Accessibility Tests** | axe-core automated audits for all major views |
-| **API Mocking** | MSW (Mock Service Worker) for Gemini API responses |
-
----
-
-*ArenaAI — Engineered to deliver world-class safety and intelligence for the FIFA World Cup 2026.*

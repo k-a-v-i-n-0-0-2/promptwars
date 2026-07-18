@@ -68,6 +68,9 @@ const CommandPalette = ({ open, onClose, onSelect }) => {
 
           {/* Palette */}
           <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command Palette"
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
@@ -93,7 +96,7 @@ const CommandPalette = ({ open, onClose, onSelect }) => {
               </div>
 
               {/* Results */}
-              <div className="max-h-[300px] overflow-y-auto p-2">
+              <div role="listbox" className="max-h-[300px] overflow-y-auto p-2">
                 {filtered.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-text-muted">
                     No commands found
@@ -102,6 +105,8 @@ const CommandPalette = ({ open, onClose, onSelect }) => {
                   filtered.map((cmd, i) => (
                     <button
                       key={cmd.id}
+                      role="option"
+                      aria-selected={i === selectedIndex}
                       onClick={() => onSelect(cmd)}
                       onMouseEnter={() => setSelectedIndex(i)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors duration-150 cursor-pointer ${

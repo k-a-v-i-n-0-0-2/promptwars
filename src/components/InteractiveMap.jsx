@@ -208,6 +208,16 @@ export default function InteractiveMap() {
         mountRef.current.removeChild(renderer.domElement);
       }
       cancelAnimationFrame(animationRef.current);
+      scene.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          if (Array.isArray(object.material)) {
+            object.material.forEach((mat) => mat.dispose());
+          } else {
+            object.material.dispose();
+          }
+        }
+      });
       renderer.dispose();
     };
   }, []);
@@ -231,7 +241,8 @@ export default function InteractiveMap() {
       </div>
 
       {/* 3D Canvas Container */}
-      <div ref={mountRef} className="flex-1 w-full h-full cursor-pointer touch-none" />
+      <div ref={mountRef} className="flex-1 w-full h-full cursor-pointer touch-none" role="img" aria-label="3D Interactive Stadium Map showing active sectors" />
+      <div className="sr-only">Interactive 3D visualization of the stadium. Hover over or click highlighted sectors (like 301 and 302) to view live occupancy, temperature, and status data.</div>
 
       {/* Loading Overlay */}
       {loading && (

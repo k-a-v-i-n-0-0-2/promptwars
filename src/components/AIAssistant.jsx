@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import {
   Send,
   Sparkles,
@@ -134,7 +135,7 @@ const MessageBubble = ({ msg }) => {
             : 'glass text-text-primary'
         }`}
       >
-        {/* Simple markdown rendering */}
+        {/* Safe markdown rendering with DOMPurify */}
         {msg.content.split('\n').map((line, i) => {
           // Bold
           const rendered = line.replace(/\*\*(.*?)\*\*/g, '<strong class="text-text-primary font-semibold">$1</strong>');
@@ -143,27 +144,29 @@ const MessageBubble = ({ msg }) => {
           // Code
           const rendered3 = rendered2.replace(/`(.*?)`/g, '<code class="bg-surface-raised px-1.5 py-0.5 rounded text-cyan text-xs">$1</code>');
 
+          const safeHtml = DOMPurify.sanitize(rendered3, { ALLOWED_TAGS: ['strong', 'em', 'code', 'br', 'span', 'div', 'p'], ALLOWED_ATTR: ['class'] });
+
           if (line.startsWith('|')) {
             // Table rows
             return (
-              <div key={i} className="text-xs text-text-secondary font-mono overflow-x-auto" dangerouslySetInnerHTML={{ __html: rendered3 }} />
+              <div key={i} className="text-xs text-text-secondary font-mono overflow-x-auto" dangerouslySetInnerHTML={{ __html: safeHtml }} />
             );
           }
           if (line.startsWith('- ') || line.startsWith('* ')) {
             return (
               <div key={i} className="flex items-start gap-2 ml-2">
                 <span className="text-cyan mt-1.5">•</span>
-                <span dangerouslySetInnerHTML={{ __html: rendered3.slice(2) }} />
+                <span dangerouslySetInnerHTML={{ __html: safeHtml.slice(2) }} />
               </div>
             );
           }
           if (/^\d+\.\s/.test(line)) {
             return (
-              <div key={i} className="ml-2 text-text-secondary" dangerouslySetInnerHTML={{ __html: rendered3 }} />
+              <div key={i} className="ml-2 text-text-secondary" dangerouslySetInnerHTML={{ __html: safeHtml }} />
             );
           }
           if (line.trim() === '') return <br key={i} />;
-          return <p key={i} dangerouslySetInnerHTML={{ __html: rendered3 }} />;
+          return <p key={i} dangerouslySetInnerHTML={{ __html: safeHtml }} />;
         })}
       </div>
     </motion.div>
@@ -196,7 +199,11 @@ What would you like to know?`,
   }, [messages, isTyping]);
 
   const sendMessage = async (text) => {
-    const userMsg = { id: Date.now(), role: 'user', content: text };
+    // Sanitize and limit input length
+    const cleanText = text.trim().slice(0, 500);
+    if (!cleanText) return;
+
+    const userMsg = { id: Date.now(), role: 'user', content: cleanText };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
@@ -213,12 +220,15 @@ Here is the active stadium telemetry (real-time data):
 
 Please use this real-time data to answer the user's questions. Speak as a professional stadium coordinator. Keep answers concise, and format tables or lists in clean markdown.`;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
     try {
       // Build conversation history payload in Gemini format
       const apiMessages = [
         {
           role: 'user',
-          parts: [{ text: `${systemPrompt}\n\nUser Question: ${text}` }]
+          parts: [{ text: `${systemPrompt}\n\nUser Question: ${cleanText}` }]
         }
       ];
 
@@ -230,8 +240,11 @@ Please use this real-time data to answer the user's questions. Speak as a profes
         },
         body: JSON.stringify({
           contents: apiMessages
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`API returned status ${response.status}`);
@@ -246,7 +259,9 @@ Please use this real-time data to answer the user's questions. Speak as a profes
         { id: Date.now() + 1, role: 'assistant', content: replyText }
       ]);
     } catch (error) {
-      console.error('Error calling Gemini API:', error);
+      // Structured error handling without leaking full details to console in production
+      clearTimeout(timeoutId);
+      const isTimeout = error.name === 'AbortError';
       // Fallback to offline template if network/key fails
       const fallbackResponse = SOPHIA_RESPONSES[text] || DEFAULT_RESPONSE;
       setTimeout(() => {
@@ -289,6 +304,8 @@ Please use this real-time data to answer the user's questions. Speak as a profes
       {/* Messages */}
       <div
         ref={scrollRef}
+        role="log"
+        aria-live="polite"
         className="flex-1 overflow-y-auto space-y-4 pr-2 scroll-smooth"
       >
         <AnimatePresence>
@@ -338,13 +355,15 @@ Please use this real-time data to answer the user's questions. Speak as a profes
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Sophia anything..."
+            aria-label="Ask Sophia anything"
             className="flex-1 bg-transparent text-sm text-text-primary placeholder:text-text-faint focus:outline-none"
           />
-          <button type="button" className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-text-muted hover:text-text-secondary cursor-pointer">
+          <button type="button" aria-label="Voice input" className="p-2 rounded-lg hover:bg-white/[0.04] transition-colors text-text-muted hover:text-text-secondary cursor-pointer">
             <Mic size={16} />
           </button>
           <button
             type="submit"
+            aria-label="Send message"
             disabled={!input.trim()}
             className="p-2 rounded-lg bg-cyan/15 text-cyan hover:bg-cyan/25 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
           >

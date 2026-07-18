@@ -5,6 +5,7 @@ import {
   AreaChart, Area, RadialBarChart, RadialBar, Legend, PieChart, Pie, Cell,
 } from 'recharts';
 import { TrendingUp, Users, Utensils, DoorOpen, Activity } from 'lucide-react';
+import GlassTooltip from './ui/GlassTooltip';
 
 /* ──────────────────────────────────────────────────────────
    Mock data
@@ -49,23 +50,6 @@ const RADIAL_DATA = [
   { name: 'Services', value: 88.9, fill: '#FBBF24' },
 ];
 
-/* ──────────────────────────────────────────────────────────
-   Custom tooltip
-   ────────────────────────────────────────────────────────── */
-const GlassTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="glass-strong rounded-xl px-4 py-3 text-xs shadow-elevated">
-      <p className="text-text-muted mb-1 font-medium">{label}</p>
-      {payload.map((p, i) => (
-        <p key={i} className="text-text-primary">
-          <span className="inline-block w-2 h-2 rounded-full mr-2" style={{ background: p.color || p.fill }} />
-          {p.name}: {typeof p.value === 'number' ? p.value.toLocaleString() : p.value}
-        </p>
-      ))}
-    </div>
-  );
-};
 
 /* ──────────────────────────────────────────────────────────
    Section wrapper

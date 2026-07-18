@@ -99,6 +99,7 @@ const EmergencyCenter = () => {
 
           <button
             onClick={() => setActiveProtocol(!activeProtocol)}
+            aria-pressed={activeProtocol}
             className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 cursor-pointer ${
               activeProtocol
                 ? 'bg-surface-raised text-text-primary hover:bg-surface-overlay border border-border'
@@ -150,6 +151,8 @@ const EmergencyCenter = () => {
               return (
                 <motion.button
                   key={item.id}
+                  role="checkbox"
+                  aria-checked={checked}
                   onClick={() => activeProtocol && toggleCheck(item.id)}
                   layout
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm transition-all duration-200 cursor-pointer ${

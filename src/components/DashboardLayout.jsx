@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -10,11 +10,12 @@ import {
   Bell,
   Settings,
 } from 'lucide-react';
-import Overview from './Overview';
-import InteractiveMap from './InteractiveMap';
-import AIAssistant from './AIAssistant';
-import AnalyticsPanel from './AnalyticsPanel';
-import EmergencyCenter from './EmergencyCenter';
+
+const Overview = lazy(() => import('./Overview'));
+const InteractiveMap = lazy(() => import('./InteractiveMap'));
+const AIAssistant = lazy(() => import('./AIAssistant'));
+const AnalyticsPanel = lazy(() => import('./AnalyticsPanel'));
+const EmergencyCenter = lazy(() => import('./EmergencyCenter'));
 
 const NAV_ITEMS = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -74,7 +75,7 @@ const DashboardLayout = ({ activeTab, onTabChange, onCommandPalette }) => {
       className="relative z-10 flex min-h-screen p-4 sm:p-5 gap-5 bg-void text-text-primary"
     >
       {/* ── Sidebar (Floating Premium Panel) ── */}
-      <aside className="hidden md:flex flex-col w-18 lg:w-64 glass-strong rounded-3xl border border-white/[0.05] h-[calc(100vh-40px)] sticky top-5 z-40 shrink-0 p-4 shadow-elevated">
+      <aside aria-label="Main navigation" className="hidden md:flex flex-col w-18 lg:w-64 glass-strong rounded-3xl border border-white/[0.05] h-[calc(100vh-40px)] sticky top-5 z-40 shrink-0 p-4 shadow-elevated">
         
         {/* Header/Logo */}
         <div className="flex items-center gap-3 px-2 py-4 mb-4">
@@ -88,7 +89,7 @@ const DashboardLayout = ({ activeTab, onTabChange, onCommandPalette }) => {
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 flex flex-col gap-1.5 py-2">
+        <nav aria-label="Primary" className="flex-1 flex flex-col gap-1.5 py-2">
           {NAV_ITEMS.map((item) => (
             <SidebarItem
               key={item.id}
@@ -116,7 +117,7 @@ const DashboardLayout = ({ activeTab, onTabChange, onCommandPalette }) => {
       <div className="flex-1 flex flex-col min-h-0 pb-16 md:pb-0">
         
         {/* Workspace Top bar */}
-        <header className="glass-strong border border-white/[0.05] rounded-3xl px-6 py-4 flex items-center justify-between shadow-elevated mb-5">
+        <header role="banner" className="glass-strong border border-white/[0.05] rounded-3xl px-6 py-4 flex items-center justify-between shadow-elevated mb-5">
           <div>
             <span className="text-[9px] text-text-muted font-bold tracking-widest uppercase">System workspace</span>
             <h1 className="text-base font-bold text-white font-display tracking-tight uppercase mt-0.5">
@@ -133,23 +134,32 @@ const DashboardLayout = ({ activeTab, onTabChange, onCommandPalette }) => {
             
             <div className="h-4 w-[1px] bg-white/[0.05]" />
 
-            <button className="p-2 rounded-xl hover:bg-white/[0.03] transition-colors text-text-muted hover:text-text-secondary cursor-pointer border border-transparent hover:border-white/[0.04]">
+            <button aria-label="Notifications" className="p-2 rounded-xl hover:bg-white/[0.03] transition-colors text-text-muted hover:text-text-secondary cursor-pointer border border-transparent hover:border-white/[0.04]">
               <Bell size={16} />
             </button>
-            <button className="p-2 rounded-xl hover:bg-white/[0.03] transition-colors text-text-muted hover:text-text-secondary cursor-pointer border border-transparent hover:border-white/[0.04]">
+            <button aria-label="Settings" className="p-2 rounded-xl hover:bg-white/[0.03] transition-colors text-text-muted hover:text-text-secondary cursor-pointer border border-transparent hover:border-white/[0.04]">
               <Settings size={16} />
             </button>
           </div>
         </header>
 
         {/* Content Viewport */}
-        <main className="flex-1 min-h-0 overflow-y-auto">
-          <ActivePage />
+        <main id="main-content" className="flex-1 min-h-0 overflow-y-auto relative">
+          <Suspense fallback={
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="flex h-3 w-3 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-cyan"></span>
+              </span>
+            </div>
+          }>
+            <ActivePage />
+          </Suspense>
         </main>
       </div>
 
       {/* ── Bottom Nav (Mobile/Tablet viewport) ── */}
-      <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 glass-strong border border-white/[0.06] rounded-2xl flex items-center justify-around px-2 py-2 shadow-elevated">
+      <nav aria-label="Mobile navigation" className="md:hidden fixed bottom-4 left-4 right-4 z-40 glass-strong border border-white/[0.06] rounded-2xl flex items-center justify-around px-2 py-2 shadow-elevated">
         {NAV_ITEMS.map((item) => {
           const active = activeTab === item.id;
           return (

@@ -20,53 +20,10 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-/* ──────────────────────────────────────────────────────────
-   Mock Data & Logs Definitions
-   ────────────────────────────────────────────────────────── */
-const LOG_TEMPLATES = [
-  { level: 'OK', source: 'INGRESS', desc: 'Scanner handshake accepted at GATE_04 (UID: 9f81a)' },
-  { level: 'OK', source: 'THERMAL', desc: 'HVAC fan speed auto-adjusted in ZONE_EAST to 65%' },
-  { level: 'WARN', source: 'INGRESS', desc: 'Gate 2 queue length approaching 5-minute threshold' },
-  { level: 'OK', source: 'NETWORK', desc: 'Sensor grid ping check complete (1420/1420 active)' },
-  { level: 'OK', source: 'SYSTEM', desc: 'Evacuation routing optimization completed in 4.2ms' },
-  { level: 'OK', source: 'CONCESS', desc: 'Transaction node CONCESS_B registered 12.4 tx/sec' },
-  { level: 'OK', source: 'INGRESS', desc: 'Redirection script GATE_02_OVERFLOW initialized' },
-  { level: 'WARN', source: 'AUDIO', desc: 'Decibel peak registered in Section North (106.4 dB)' },
-];
+import GlassTooltip from './ui/GlassTooltip';
+import { LOG_TEMPLATES, generateTimelineData, generateSensorNodes, BRIEFINGS } from '../utils/mockData';
 
-const generateTimelineData = () => {
-  return Array.from({ length: 24 }, (_, i) => ({
-    time: `${String(i).padStart(2, '0')}:00`,
-    spectators: Math.floor(45000 + Math.sin((i - 8) * 0.25) * 32000 + Math.random() * 4000),
-    bandwidth: parseFloat((1.2 + Math.cos((i - 8) * 0.2) * 0.6 + Math.random() * 0.2).toFixed(2)),
-  }));
-};
-
-const SENSOR_NODES = Array.from({ length: 16 }, (_, i) => ({
-  id: `N-${String(i + 1).padStart(2, '0')}`,
-  zone: ['NW', 'NE', 'SW', 'SE'][i % 4],
-  temp: parseFloat((21.5 + (i % 3) * 0.8 + Math.random() * 0.5).toFixed(1)),
-  status: i === 6 ? 'WARN' : 'OK',
-  load: Math.floor(40 + (i * 3.5) % 45),
-}));
-
-const HighDensityTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  return (
-    <div className="bg-void/95 border border-white/[0.08] backdrop-blur-md rounded-lg p-3 text-[10px] font-mono shadow-xl">
-      <div className="text-text-muted border-b border-white/[0.05] pb-1.5 mb-1.5">TIMELINE: {label}</div>
-      {payload.map((p, i) => (
-        <div key={i} className="flex items-center justify-between gap-6 py-0.5">
-          <span className="text-text-secondary flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full" style={{ background: p.color || '#E5C158' }} />
-            {p.name.toUpperCase()}:
-          </span>
-          <span className="text-white font-bold">{p.value.toLocaleString()} {p.unit}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
+const SENSOR_NODES = generateSensorNodes();
 
 /* ──────────────────────────────────────────────────────────
    Enterprise Telemetry Dashboard Screen (with Executive HUD)
@@ -77,13 +34,6 @@ const Overview = () => {
   const [timelineData] = useState(generateTimelineData());
   const [currentBriefing, setCurrentBriefing] = useState(0);
   const terminalEndRef = useRef(null);
-
-  // Simple, human-readable executive briefings
-  const BRIEFINGS = [
-    { status: 'OPTIMAL', text: 'All 24 stadium gates are open and flowing. Average entry wait time is 2.4 minutes. Air quality and temperature remain within comfortable thresholds.' },
-    { status: 'ATTENTION', text: 'Gate 2 experiencing higher arrival volumes than predicted. Flow is active but wait times are slightly increased. Redirections are handling the load.' },
-    { status: 'OPTIMAL', text: 'Next flow peak is expected in 15 minutes as kickoff approaches. Medical and safety grids are fully synched with local command protocols.' },
-  ];
 
   useEffect(() => {
     // Seed initial logs
@@ -253,7 +203,7 @@ const Overview = () => {
                 axisLine={false}
                 tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
               />
-              <Tooltip content={<HighDensityTooltip />} />
+              <Tooltip content={<GlassTooltip />} />
               <Area
                 type="monotone"
                 dataKey="spectators"
@@ -275,6 +225,7 @@ const Overview = () => {
             </span>
             <button
               onClick={() => setIsPlaying(!isPlaying)}
+              aria-label={isPlaying ? 'Pause live logs' : 'Resume live logs'}
               className="text-[9px] text-text-secondary hover:text-white transition-colors flex items-center gap-1 cursor-pointer bg-white/[0.02] border border-white/[0.05] rounded px-2 py-0.5"
             >
               {isPlaying ? <Pause size={10} /> : <Play size={10} />}
